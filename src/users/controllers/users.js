@@ -2,8 +2,7 @@ const userSchema = require('../models/users')
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const users = require('../models/users');
-/* const auth = require("../auth/auth"); */
-require('dotenv').config()
+const auth = require("../auth/auth");
 
 //Numero de rondas de encriptaciones
 const roundSalt = 10;
@@ -27,7 +26,7 @@ controller.createUser = async(req, res) => {
                   nombre,
                   email,
                   password : password
-             }, process.env.SIGNATURE, {
+             }, "kjaskjkfjkfhdshfurh65423", {
                   expiresIn:3600000
              })
              //Añadimos el token al objeto usuario
@@ -69,7 +68,7 @@ controller.loginUser = async (req, res) => {
          // Create token
          const token = jwt.sign(
            { user_id: user._id, email },
-           process.env.SIGNATURE,
+           "kjaskjkfjkfhdshfurh65423",
            {
              expiresIn: 3600000,
            }
@@ -94,15 +93,28 @@ controller.getAllUsers = (req, res) => {
 }
 
 controller.getOneUser = (req, res) => {
-    res.send('usuario identificado por id')
+     const { id } = req.params; 
+     userSchema
+         .findById(id)
+         .then((data) =>  res.json({ data: data }))
+         .catch((error) =>  res.json({message: error}))
 }
 
 controller.updateUser = (req, res) => {
-    res.send('Usuario actualizado')
+     const { id } = req.params;
+     const { nombre, email, password } = req.body;
+     userSchema
+         .updateOne({_id: id}, {$set:{ nombre, email, password }})
+         .then((data) =>  res.json(data))
+         .catch((error) =>  res.json({message: error}))
 }
 
 controller.deleteUser = (req, res) => {
-    res.send('Usuario borrado')
+     const { id } = req.params; 
+     userSchema
+         .remove({_id:id})
+         .then((data) =>  res.json(data))
+         .catch((error) =>  res.json({message: error}))
 }
 
 module.exports = controller;
