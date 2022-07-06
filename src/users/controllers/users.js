@@ -26,7 +26,7 @@ controller.createUser = async(req, res) => {
                   nombre,
                   email,
                   password : password
-             }, "kjaskjkfjkfhdshfurh65423", {
+             }, process.env.SIGNATURE, {
                   expiresIn:3600000
              })
              //Añadimos el token al objeto usuario
@@ -68,7 +68,8 @@ controller.loginUser = async (req, res) => {
          // Create token
          const token = jwt.sign(
            { user_id: user._id, email },
-           "kjaskjkfjkfhdshfurh65423",
+           process.env.SIGNATURE,
+          //  "kjaskjkfjkfhdshfurh65423",
            {
              expiresIn: 3600000,
            }
@@ -82,13 +83,13 @@ controller.loginUser = async (req, res) => {
      } catch (err) {
        console.log(err);
      }
-     // Our register logic ends here
+     // Our register login ends here
   }
 
 controller.getAllUsers = (req, res) => {
     userSchema
         .find()
-        .then(data =>  res.json(data))
+        .then(data =>  res.status(200).json(data))
         .catch(error =>  res.json({msj: error}))
 }
 
@@ -96,7 +97,7 @@ controller.getOneUser = (req, res) => {
      const { id } = req.params; 
      userSchema
          .findById(id)
-         .then((data) =>  res.json({ data: data }))
+         .then((data) =>  res.status(200).json({ data: data }))
          .catch((error) =>  res.json({message: error}))
 }
 
